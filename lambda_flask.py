@@ -1,8 +1,4 @@
-def route_wrapper_factory():
-    def route_wrapper(func):
-        return func()
-    
-    return route_wrapper
+
 
 
 class Flask:
@@ -11,9 +7,11 @@ class Flask:
         self.routes = {}
 
     def route(self, raw_path):
-        tmp = route_wrapper_factory()
-        self.routes[raw_path] = tmp
-        return tmp
+        def route_wrapper(func=None):
+            self.routes[raw_path] = func
+            return func
+        
+        return route_wrapper
     
     def run(self, **kwargs):
         pass

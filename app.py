@@ -16,4 +16,5 @@ def test2():
 
 
 app.run(debug=True)
-# app.routes['/help']()
+print(app.routes['/help']())
+# print(test2())
