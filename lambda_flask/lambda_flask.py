@@ -11,6 +11,13 @@ class Flask:
         self.routes = {}
         self.json_encoder = json.JSONEncoder()
 
+    def __call__(self, evt, context) -> dict:
+        """
+        This function is the entrypoint for the lambda function
+        """
+        resp = self.exec_route(evt['raw_path'])
+        return self.CORS(resp)
+
     def route(self, raw_path):
         def route_wrapper(func=None):
             self.routes[raw_path] = func
@@ -27,31 +34,32 @@ class Flask:
         else:
             headers = {**CORS_HEADERS}
         msg['headers'] = headers
+        return msg
 
-    def endpoint(self, raw_path):
+    def exec_route(self, raw_path):
         if raw_path not in self.routes:
-            return self.CORS({
+            return {
                 "statusCode": 404,
                 "body": f"The path '{raw_path}' could not be found"
-            })
+            }
         
         try:
             resp = self.routes[raw_path]()
         except Exception as e:
-            return self.CORS({
+            return {
                 "statusCode": 500,
                 "body": f"The path '{raw_path}' experienced the following error:\n\n{repr(e)}"
-            })
+            }
         
         try:
             resp = self.json_encoder.default(resp)
         except Exception as e:
-            return self.CORS({
+            return {
                 "statusCode": 500,
                 "body": f"The path '{raw_path}' couldn't serialize the response ({repr(e)}):\n\n{str(resp)}"
-            })
+            }
         
-        return self.CORS({
+        return {
             'statusCode': 200,
             'body': resp,
-        })
+        }

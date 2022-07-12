@@ -1,3 +1,4 @@
+__name__ = "hi"
 if __name__ == '__main__':
     import flask
 else:
@@ -5,7 +6,6 @@ else:
 
 
 app = flask.Flask(__name__)
-
 
 @app.route('/')
 def test1():
@@ -17,12 +17,7 @@ def test2():
     return 'b'
 
 
-def main():
-    if __name__ == '__main__':
-        app.run(debug=True)
-    else:
-        print(app.routes['/help']())
-
-
 if __name__ == '__main__':
-    main()
+    app.run(debug=True)
+else:
+    print(app({'raw_path': '/'}, ''))
