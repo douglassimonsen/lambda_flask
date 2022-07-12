@@ -4,5 +4,5 @@ class JSONEncoder:
     def __init__(self) -> None:
         pass
 
-    def default(obj) -> str:
+    def default(self, obj) -> str:
         return json.dumps(obj)
