@@ -1,4 +1,5 @@
 from . import flask_json as _json
+import json
 CORS_HEADERS = {
     "Access-Control-Allow-Headers" : "Content-Type",
     "Access-Control-Allow-Origin": "*",
@@ -15,7 +16,7 @@ class Flask:
         """
         This function is the entrypoint for the lambda function
         """
-        resp = self.exec_route(evt['rawPath'])
+        resp = self.exec_route(evt, context)
         return self.CORS(resp)
 
     def route(self, raw_path):
@@ -36,7 +37,17 @@ class Flask:
         msg['headers'] = headers
         return msg
 
-    def exec_route(self, raw_path):
+    def exec_route(self, evt, context):
+        raw_path = evt['rawPath']
+        if raw_path == '/debug':  # special method to help with debugging, almost certainly a security vulnerability
+            return {
+                'statusCode': 200,
+                'body': self.json_encoder.default({
+                    'evt': evt,
+                    'context': context,
+                })
+            }
+
         if raw_path not in self.routes:
             return {
                 "statusCode": 404,

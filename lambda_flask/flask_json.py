@@ -6,5 +6,5 @@ class JSONEncoder:
 
     def default(self, obj) -> str:
         if isinstance(obj, (list, dict)):
-            return json.dumps(obj)
+            return json.dumps(obj, indent=4, default=str)
         return str(obj)
