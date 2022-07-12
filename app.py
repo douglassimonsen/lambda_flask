@@ -1,5 +1,7 @@
-# import flask
-import lambda_flask as flask
+if __name__ == '__main__':
+    import flask
+else:
+    import lambda_flask as flask
 
 
 app = flask.Flask(__name__)
@@ -15,6 +17,12 @@ def test2():
     return 'b'
 
 
-app.run(debug=True)
-print(app.routes['/help']())
-# print(test2())
+def main():
+    if __name__ == '__main__':
+        app.run(debug=True)
+    else:
+        print(app.routes['/help']())
+
+
+if __name__ == '__main__':
+    main()
