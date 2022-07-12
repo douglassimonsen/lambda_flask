@@ -19,5 +19,3 @@ def test2():
 
 if __name__ == '__main__':
     app.run(debug=True)
-else:
-    print(app({'raw_path': '/'}, ''))

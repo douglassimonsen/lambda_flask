@@ -1,4 +1,4 @@
-from . import flask_json as json
+from . import flask_json as _json
 CORS_HEADERS = {
     "Access-Control-Allow-Headers" : "Content-Type",
     "Access-Control-Allow-Origin": "*",
@@ -9,13 +9,13 @@ class Flask:
     def __init__(self, name) -> None:
         self.name = name
         self.routes = {}
-        self.json_encoder = json.JSONEncoder()
+        self.json_encoder = _json.JSONEncoder()
 
     def __call__(self, evt, context) -> dict:
         """
         This function is the entrypoint for the lambda function
         """
-        resp = self.exec_route(evt['raw_path'])
+        resp = self.exec_route(evt['rawPath'])
         return self.CORS(resp)
 
     def route(self, raw_path):
