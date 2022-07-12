@@ -1,4 +1,4 @@
-import flask_json as json
+from . import flask_json as json
 
 
 class Flask:
