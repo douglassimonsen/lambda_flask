@@ -10,3 +10,7 @@ This library is part of a larger project to build a Marey's String Chart site wi
  # Worries
 
  I need to study lambda's thread safety in more depth. There's global state that may be poisoning 
+
+ # Deployment
+
+ To compile this library, run `python setup.py sdist`. This should create a `.tar.gz` object in the `/dist` folder. You can then run `python -m pip install dist/lambda_flask-<version>.tar.gz` to install the package.

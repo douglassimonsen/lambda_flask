@@ -1,2 +1,6 @@
 __pycache__
 *.zip
+static
+test.py
+lambda_flask.egg-info
+dist
