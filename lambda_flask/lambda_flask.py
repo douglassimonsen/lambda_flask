@@ -68,7 +68,7 @@ class Flask:
     def tmp_get_json(self):
         method = self.evt['requestContext']['http']['method']
         if method == 'GET':
-            return self.evt['queryStringParameters']
+            return self.evt.get('queryStringParameters', {})
         else:
             try:
                 return json.loads(self.evt['body'])
@@ -105,7 +105,7 @@ class Flask:
 
         if raw_path not in self.routes:
             static_candidate = pathlib.Path(self.root_folder, 'static', raw_path[1:])
-            if static_candidate.exists:  # if you tell me this is a race condition, I'll fight you
+            if static_candidate.exists():  # if you tell me this is a race condition, I'll fight you
 
                 return {
                     "body": open(static_candidate, 'rb').read(),
