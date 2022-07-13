@@ -102,7 +102,13 @@ class Flask:
                 "body": f"The path '{raw_path}' couldn't serialize the response ({repr(e)}):\n\n{str(resp)}"
             }
         
-        return {
-            'statusCode': 200,
-            'body': resp,
-        }
+        if isinstance(resp, dict):
+            return {
+                'statusCode': 200,
+                **resp
+            }
+        else:
+            return {
+                'statusCode': 200,
+                'body': str(resp),
+            }
