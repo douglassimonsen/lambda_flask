@@ -2,6 +2,8 @@ from . import flask_json, utils
 import json
 import base64
 import urllib.parse
+import inspect
+import pathlib
 CORS_HEADERS = {
     "Access-Control-Allow-Headers" : "Content-Type",
     "Access-Control-Allow-Origin": "*",
@@ -26,13 +28,14 @@ class Flask:
         self.json_encoder = flask_json.JSONEncoder()
         self.evt = None
         self.context = None
+        self.root_folder = pathlib.Path(inspect.stack()[1].filename).parent
         utils.request.get_json = self.tmp_get_json  # necessary to get flask functionality. Most likely to cause threading weirdness
 
     def __call__(self, evt, context) -> dict:
         """
         This function is the entrypoint for the lambda function
         """
-        if evt['isBase64Encoded']:
+        if evt.get('isBase64Encoded', False):
             evt['body'] = base64.b64decode(evt['body']).decode("utf-8")
         self.evt = evt
         self.context = context
@@ -51,6 +54,10 @@ class Flask:
         pass
 
     def CORS(self, msg):
+        if "statusCode" not in msg:
+            msg['statusCode'] = 200
+        if "body" not in msg:
+            msg['body'] = ""
         if 'headers' in msg:
             headers = {**CORS_HEADERS, **msg['headers']}
         else:
@@ -70,6 +77,21 @@ class Flask:
                 return {k: v[0] for k, v in body.items()}
         return method
 
+    @staticmethod
+    def _get_content_type(suffix):
+        content_map = {
+            '.css': 'text/css',
+            '.csv': 'text/csv',
+            '.doc': 'application/msword',
+            '.html': 'text/html',
+            '.js': 'text/javascript',
+            '.json': 'application/json',
+            '.pdf': 'application/pdf',
+            '.xml': 'application/xml',
+            '.zip': 'application/zip',
+        }
+        return content_map.get(suffix, 'text/plain')
+
     def exec_route(self):
         raw_path = self.evt['rawPath']
         if raw_path == '/debug':  # special method to help with debugging, almost certainly a security vulnerability
@@ -82,6 +104,14 @@ class Flask:
             }
 
         if raw_path not in self.routes:
+            static_candidate = pathlib.Path(self.root_folder, 'static', raw_path[1:])
+            if static_candidate.exists:  # if you tell me this is a race condition, I'll fight you
+
+                return {
+                    "body": open(static_candidate, 'rb').read(),
+                    "headers": {"Content-Type": self._get_content_type(static_candidate.suffix)}
+                }
+
             return {
                 "statusCode": 404,
                 "body": f"The path '{raw_path}' could not be found"
@@ -103,12 +133,8 @@ class Flask:
             }
         
         if isinstance(resp, dict):
-            return {
-                'statusCode': 200,
-                **resp
-            }
+            return resp
         else:
             return {
-                'statusCode': 200,
                 'body': str(resp),
             }
