@@ -7,7 +7,28 @@ Resources:
       Description: A test of cloudformation
       Name: Website-Backend-Api
       ProtocolType: HTTP
-  
+  WebsiteApiStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref WebsiteApi
+      StageName: $default
+  WebsiteApiRoute1:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref WebsiteApi
+      RouteKey: ANY /{proxy+}
+  WebsiteApiRoute2:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref WebsiteApi
+      RouteKey: OPTIONS /{proxy+}
+  WebsiteIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref WebsiteApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebsiteBackend.Arn}/invocations"
+      PayloadFormatVersion: 2.0  # Idk what this does
   WebsiteBackend:
     Type: AWS::Lambda::Function
     Properties:
