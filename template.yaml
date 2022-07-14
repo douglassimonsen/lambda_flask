@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: An environment to test the upload library
+Resources: 
+  WebsiteBackend:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: Website-Backend
+      Handler: app.app
+      Role: arn:aws:iam::111263457661:role/service-role/web-test-role-f1tnz08h
+      Code:
+        S3Bucket: cta-bus-and-train-tracker
+        S3Key: config/backend.zip
+      Runtime: python3.9
+      Timeout: 30
+      MemorySize: 128
