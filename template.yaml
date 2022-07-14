@@ -1,6 +1,13 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: An environment to test the upload library
 Resources: 
+  WebsiteApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Description: A test of cloudformation
+      Name: Website-Backend-Api
+      ProtocolType: HTTP
+  
   WebsiteBackend:
     Type: AWS::Lambda::Function
     Properties:
