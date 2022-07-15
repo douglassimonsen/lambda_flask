@@ -11,6 +11,7 @@ Resources:
     Type: AWS::ApiGatewayV2::Stage
     Properties:
       ApiId: !Ref WebsiteApi
+      AutoDeploy: True
       StageName: $default
   WebsiteApiRoute1:
     Type: AWS::ApiGatewayV2::Route
